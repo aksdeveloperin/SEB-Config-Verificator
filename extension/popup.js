@@ -1,28 +1,153 @@
 const BASE_URL = "https://val2-h3cz.onrender.com";
 
-const statusEl = document.getElementById("status");
-const metaEl = document.getElementById("meta");
-const keyInput = document.getElementById("apiKey");
+// =========================
+// 🔹 Helpers
+// =========================
+function $(id) {
+    return document.getElementById(id);
+}
 
-// =========================
-// 🔹 Save API key
-// =========================
-keyInput.value = localStorage.getItem("apiKey") || "";
-
-keyInput.addEventListener("input", () => {
-    localStorage.setItem("apiKey", keyInput.value);
-});
-
-// =========================
-// 🔹 Status UI
-// =========================
-function setStatus(msg, type = "") {
-    statusEl.className = type;
-    statusEl.innerText = msg;
+function hasConsent() {
+    return localStorage.getItem("consentGiven") === "true";
 }
 
 // =========================
-// 🔹 Get Cookie (Promise)
+// 🔹 Elements
+// =========================
+const keyInput = $("apiKey");
+const consentBox = $("consentBox");
+const mainUI = $("mainUI");
+const startBtn = $("start");
+const acceptBtn = $("acceptBtn");
+
+// =========================
+// 🔹 State
+// =========================
+let appState = {
+    status: "",
+    slots: "",
+    notice: ""
+};
+
+// =========================
+// 🔹 UI Switch
+// =========================
+function showConsent() {
+    if (consentBox) consentBox.style.display = "block";
+    if (mainUI) mainUI.style.display = "none";
+
+    if (consentBox) consentBox.scrollIntoView();
+}
+
+function showMainUI() {
+    if (consentBox) consentBox.style.display = "none";
+    if (mainUI) mainUI.style.display = "block";
+}
+
+// =========================
+// 🔹 INIT (FIXED BUG)
+// =========================
+if (!hasConsent()) {
+    showConsent();
+} else {
+    showMainUI();
+}
+
+// =========================
+// 🔹 Accept
+// =========================
+if (acceptBtn) {
+    acceptBtn.onclick = () => {
+        localStorage.setItem("consentGiven", "true");
+        showMainUI();
+    };
+}
+
+// =========================
+// 🔹 Message Renderer
+// =========================
+function renderMessage(type = "info") {
+    const box = $("messageBox");
+    if (!box) return;
+
+    box.style.display = "block";
+    box.className = "";
+
+    if (type === "success") box.classList.add("msg-success");
+    if (type === "error") box.classList.add("msg-error");
+    if (type === "info") box.classList.add("msg-info");
+
+    let text = "";
+
+    if (appState.status) text += appState.status + "\n\n";
+    if (appState.slots !== "") text += "Verification Slots Left: " + appState.slots + "\n\n";
+    if (appState.notice) text += "Notice: " + appState.notice;
+
+    box.innerText = text.trim();
+}
+
+// =========================
+// 🔹 Load Key
+// =========================
+if (keyInput) {
+    keyInput.value = localStorage.getItem("apiKey") || "";
+}
+
+// =========================
+// 🔹 Credits
+// =========================
+async function loadCredits() {
+    if (!keyInput) return;
+
+    const key = keyInput.value.trim();
+    if (!key) return;
+
+    try {
+        const res = await fetch(`${BASE_URL}/credits?api_key=${key}`);
+        const data = await res.json();
+
+        if (!data.credits) {
+            appState.status = "Invalid Inspection Key";
+            appState.slots = "";
+            renderMessage("error");
+        } else {
+            appState.status = "Key Verified";
+            appState.slots = data.credits;
+            renderMessage("success");
+        }
+
+    } catch {
+        appState.status = "Server error";
+        renderMessage("error");
+    }
+}
+
+if (keyInput) {
+    keyInput.addEventListener("change", () => {
+        localStorage.setItem("apiKey", keyInput.value);
+        loadCredits();
+    });
+}
+
+// =========================
+// 🔹 Notice
+// =========================
+async function loadNotice() {
+    try {
+        const res = await fetch(`${BASE_URL}/notice`);
+        const data = await res.json();
+
+        if (data.message) {
+            appState.notice = data.message;
+            renderMessage("info");
+        }
+    } catch {}
+}
+
+loadNotice();
+
+// =========================
+// 🔹 Cookie
 // =========================
 function getCookie(tabUrl) {
     return new Promise((resolve) => {
@@ -34,7 +159,7 @@ function getCookie(tabUrl) {
 }
 
 // =========================
-// 🔁 Poll result
+// 🔁 Poll
 // =========================
 async function pollResult(taskId) {
     for (let i = 0; i < 15; i++) {
@@ -44,187 +169,151 @@ async function pollResult(taskId) {
             const res = await fetch(`${BASE_URL}/result/${taskId}`);
             const data = await res.json();
 
+            if (data.notice) appState.notice = data.notice;
+
             if (data.status === "done") {
-                setStatus("SUCCESS: Completed", "success");
-                console.log("Result:", data.result);
+                appState.status = "Verification Completed";
+                renderMessage("success");
 
                 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                    chrome.tabs.reload(tabs[0].id);
+                    if (tabs[0]) chrome.tabs.reload(tabs[0].id);
                 });
 
                 return;
             }
 
             if (data.status === "error") {
-                setStatus(`ERROR: ${data.error}`, "error");
+                appState.status = data.error;
+                renderMessage("error");
                 return;
             }
 
-        } catch (err) {
-            console.error(err);
-        }
+        } catch {}
     }
 
-    setStatus("Still processing...", "loading");
+    appState.status = "Processing...";
+    renderMessage("info");
 }
 
 // =========================
-// 🚀 MAIN LOGIC
+// 🚀 MAIN
 // =========================
 async function startProcess() {
-    setStatus("Checking server...", "loading");
 
-    // 🔹 Health check
+    // 🔥 FORCE CONSENT
+    if (!hasConsent()) {
+        showConsent();
+        appState.status = "Please accept consent first";
+        renderMessage("error");
+        return;
+    }
+
+    appState.status = "Checking server...";
+    renderMessage("info");
+
     try {
         const health = await fetch(`${BASE_URL}/health`);
         if (!health.ok) throw new Error();
     } catch {
-        setStatus("ERROR: Server not reachable", "error");
+        appState.status = "Server not reachable";
+        renderMessage("error");
         return;
     }
 
-    setStatus("Working...", "loading");
-
-    // 🔹 Get active tab
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    // 🔒 Restrict to IITP only
-    const url = new URL(tab.url);
-    if (!url.hostname.endsWith("iitp.ac.in")) {
-        setStatus("ERROR: Only works on IITP site", "error");
+    if (!tab || !tab.url) {
+        appState.status = "No active tab";
+        renderMessage("error");
         return;
     }
 
-    // 🔹 Get correct cookie
+    const url = new URL(tab.url);
+
+    if (!url.hostname.endsWith("iitp.ac.in")) {
+        appState.status = "Invalid site";
+        renderMessage("error");
+        return;
+    }
+
     const cookie = await getCookie(tab.url);
 
     if (!cookie) {
-        setStatus("ERROR: Cookie not found", "error");
+        appState.status = "Session not found";
+        renderMessage("error");
         return;
     }
 
     const cookieString = `MoodleSession=${cookie.value}`;
-    console.log("Using cookie:", cookieString);
 
-    // 🔹 Extract page data
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: () => {
 
-            function extractLinks() {
-                let download = null;
-                let launch = null;
+            const download = document.querySelector('a[title="Download configuration"]')?.href;
 
-                // 🔹 Download config
-                const downloadEl = document.querySelector(
-                    'a[title="Download configuration"]'
-                );
+            const sebs = document.querySelector('a[href^="sebs://"]')?.href;
 
-                if (downloadEl) {
-                    download = downloadEl.href;
-                }
-
-                // 🔹 SEB launch links
-                const sebsLinks = document.querySelectorAll('a[href^="sebs://"]');
-
-                if (sebsLinks.length > 0) {
-
-                    for (let el of sebsLinks) {
-                        const text = (el.innerText || "").toLowerCase();
-
-                        if (text.includes("launch")) {
-                            launch = el.href;
-                            break;
-                        }
-                    }
-
-                    if (!launch) {
-                        launch = sebsLinks[0].href;
-                    }
-                }
-
-                return {
-                    page_url: window.location.href,
-                    download_url: download,
-                    launch_url: launch
-                };
-            }
-
-            return extractLinks();
+            return {
+                page_url: window.location.href,
+                download_url: download,
+                launch_url: sebs
+            };
         }
-    }, async (results) => {
+    }, async (resArr) => {
 
-        if (!results || !results[0]) {
-            setStatus("ERROR: Script failed", "error");
+        const data = resArr?.[0]?.result;
+
+        if (!data || (!data.download_url && !data.launch_url)) {
+            appState.status = "No config found";
+            renderMessage("error");
             return;
         }
-
-        const data = results[0].result;
-
-        if (!data.download_url && !data.launch_url) {
-            setStatus("ERROR: No config found", "error");
-            return;
-        }
-
-        const apiKey = keyInput.value.trim();
 
         const body = {
-            site_url: data.page_url,
-            download_url: data.download_url,
-            launch_url: data.launch_url,
-            cookie: cookieString
+            ...data,
+            cookie: cookieString,
+            api_key: keyInput?.value.trim()
         };
 
-        if (apiKey) body.api_key = apiKey;
-
-        console.log("REQUEST BODY:", body);
-
-        // 🔹 Send to backend
         try {
             const res = await fetch(`${BASE_URL}/submit`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
             });
 
             const json = await res.json();
 
+            if (json.notice) appState.notice = json.notice;
+
             if (!res.ok) {
-                setStatus(`ERROR: ${json.detail}`, "error");
+                appState.status = json.detail;
+                renderMessage("error");
                 return;
             }
 
-            // 🔹 Mode display
-            if (json.mode === "peak") {
-                setStatus("Peak Mode", "success");
-                metaEl.innerText = `Credits left: ${json.credits}`;
+            if (json.mode === "exam") {
+                appState.status = "Verification Passed";
+                appState.slots = json.credits;
+                renderMessage("success");
             } else {
-                setStatus("Normal Mode", "success");
-                metaEl.innerText = "";
+                appState.status = "Developer Mode";
+                renderMessage("info");
             }
 
-            // 🔁 Poll result
             pollResult(json.task_id);
 
-        } catch (err) {
-            console.error(err);
-            setStatus("ERROR: API failed", "error");
+        } catch {
+            appState.status = "API failed";
+            renderMessage("error");
         }
     });
 }
 
 // =========================
-// 🔘 Button click
+// 🔘 Button
 // =========================
-document.getElementById("start").addEventListener("click", startProcess);
-
-// =========================
-// ⌨️ Shortcut trigger
-// =========================
-chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.action === "START") {
-        startProcess();
-    }
-});
+if (startBtn) {
+    startBtn.addEventListener("click", startProcess);
+}

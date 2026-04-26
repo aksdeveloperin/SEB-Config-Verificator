@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy - SEB Config Verificator</title>
+
+<style>
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+h1 {
+    font-size: 32px;
+    border-bottom: 3px solid #eee;
+    padding-bottom: 10px;
+}
+
+h2 {
+    margin-top: 30px;
+    color: #222;
+}
+
+p {
+    line-height: 1.7;
+    margin: 12px 0;
+}
+
+ul {
+    margin-left: 20px;
+}
+
+.highlight {
+    background: #eef6ff;
+    padding: 15px;
+    border-left: 5px solid #007bff;
+    margin: 20px 0;
+}
+
+.warning {
+    background: #fff3cd;
+    padding: 15px;
+    border-left: 5px solid #ffc107;
+    margin: 20px 0;
+}
+
+footer {
+    margin-top: 40px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    font-size: 14px;
+    color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Privacy Policy for SEB Config Verificator</h1>
+<p><strong>Last Updated:</strong> [Insert Date]</p>
+
+<p>
+This Privacy Policy describes how the <strong>SEB Config Verificator</strong> Chrome Extension ("the Extension") 
+collects, accesses, uses, and protects information when used in authorized environments.
+</p>
+
+<div class="highlight">
+This Extension is designed exclusively for controlled examination environments and is intended for use only by authorized exam invigilators and institutional staff.
+</div>
+
+---
+
+<h2>1. Purpose of the Extension</h2>
+<p>
+The SEB Config Verificator is developed to ensure the integrity and authenticity of Safe Exam Browser (SEB) configurations used during examinations.
+</p>
+
+<p>
+Its primary goal is to:
+</p>
+<ul>
+<li>Prevent tampering with SEB configuration files</li>
+<li>Detect unauthorized modifications (e.g., enabling developer tools or bypass settings)</li>
+<li>Ensure fair and secure examination conditions</li>
+</ul>
+
+---
+
+<h2>2. Scope of Use</h2>
+<ul>
+<li>This Extension operates only on official institutional domains (e.g., *.iitp.ac.in)</li>
+<li>It is not intended for public or general browsing usage</li>
+<li>Access is limited to authorized personnel such as exam invigilators</li>
+</ul>
+
+<div class="warning">
+Unauthorized use of this Extension outside institutional environments is not supported and may violate policies.
+</div>
+
+---
+
+<h2>3. Information Accessed</h2>
+
+<p>The Extension may access the following types of data:</p>
+
+<h3>3.1 Session Data</h3>
+<ul>
+<li>Authentication session cookie (e.g., MoodleSession)</li>
+<li>Used strictly to perform authenticated requests to the official exam server</li>
+</ul>
+
+<h3>3.2 Page Data</h3>
+<ul>
+<li>Current webpage URL</li>
+<li>SEB configuration download links</li>
+<li>SEB launch links (sebs:// protocol)</li>
+</ul>
+
+<h3>3.3 User-Provided Data</h3>
+<ul>
+<li>API keys entered by authorized users</li>
+</ul>
+
+---
+
+<h2>4. How Information is Used</h2>
+
+<p>All accessed data is used solely for:</p>
+
+<ul>
+<li>Validating that the SEB configuration loaded matches the official server version</li>
+<li>Detecting inconsistencies between expected and actual configurations</li>
+<li>Supporting real-time verification during examinations</li>
+</ul>
+
+<div class="highlight">
+The Extension does NOT use data for tracking, analytics, advertising, or profiling purposes.
+</div>
+
+---
+
+<h2>5. Data Transmission</h2>
+
+<p>
+To perform verification, certain data may be transmitted to a secure backend server operated for institutional purposes.
+</p>
+
+<ul>
+<li>Session authentication may be temporarily used to fetch protected configuration data</li>
+<li>Configuration data and metadata may be sent for validation</li>
+<li>No persistent authentication data is retained</li>
+</ul>
+
+---
+
+<h2>6. Data Storage Policy</h2>
+
+<p>The Extension follows a strict no-storage policy:</p>
+
+<ul>
+<li>No session cookies are stored</li>
+<li>No personal user data is stored</li>
+<li>No browsing history is collected</li>
+</ul>
+
+<p>
+All data processing occurs in real-time and is discarded immediately after verification.
+</p>
+
+---
+
+<h2>7. Data Security</h2>
+
+<p>
+We implement appropriate technical measures to ensure:
+</p>
+
+<ul>
+<li>Secure transmission of data</li>
+<li>Protection against unauthorized access</li>
+<li>Minimal data exposure</li>
+</ul>
+
+---
+
+<h2>8. User Consent</h2>
+
+<p>
+Users are informed about data usage before using the Extension. By proceeding, users provide consent for:
+</p>
+
+<ul>
+<li>Accessing required session and page data</li>
+<li>Performing verification requests</li>
+</ul>
+
+---
+
+<h2>9. Third-Party Sharing</h2>
+
+<p>
+We do NOT share data with third parties. All communication is restricted to:
+</p>
+
+<ul>
+<li>Official institutional verification servers</li>
+</ul>
+
+---
+
+<h2>10. Limitations</h2>
+
+<p>
+While the Extension enhances detection of tampering, it does not guarantee complete prevention of all forms of misuse. It is designed to work alongside:
+</p>
+
+<ul>
+<li>Human supervision</li>
+<li>Secure exam browser systems</li>
+</ul>
+
+---
+
+<h2>11. Changes to This Policy</h2>
+
+<p>
+We may update this policy as needed. Updates will be reflected with a revised date.
+</p>
+
+---
+
+<h2>12. Contact Information</h2>
+
+<p>
+For inquiries:
+</p>
+
+<p>
+<strong>SEB Config Verificator Team</strong><br>
+[Your Email Address]<br>
+Indian Institute of Technology Patna (IITP)
+</p>
+
+---
+
+<footer>
+This Extension is intended strictly for controlled institutional examination environments and authorized users.
+</footer>
+
+</div>
+
+</body>
+</html>

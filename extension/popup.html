@@ -1,79 +1,160 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-            padding: 14px;
-            width: 260px;
-            background: #f9fafb;
-        }
+<style>
 
-        h3 {
-            margin: 0 0 10px;
-            font-size: 16px;
-        }
+/* 🔹 Global Fix */
+* {
+    box-sizing: border-box;
+}
 
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        }
+/* 🔹 Body */
+body {
+    font-family: "Segoe UI", sans-serif;
+    width: 260px;
+    margin: 0;
+    padding: 20px 16px;
+    background: #ffffff;
+    text-align: center;
+}
 
-        input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 8px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 13px;
-        }
+/* 🔹 Title */
+.title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #111;
+}
 
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 6px;
-            background: #2563eb;
-            color: white;
-            font-weight: 500;
-            cursor: pointer;
-        }
+/* 🔹 Logo */
+.logo {
+    width: 70px;
+    margin-bottom: 18px;
+}
 
-        button:hover {
-            background: #1d4ed8;
-        }
+/* 🔹 Input Section */
+.input-group {
+    text-align: left;
+    font-size: 12px;
+    margin-bottom: 14px;
+}
 
-        #status {
-            margin-top: 10px;
-            font-size: 13px;
-        }
+label {
+    color: #444;
+}
 
-        .success { color: #16a34a; }
-        .error { color: #dc2626; }
-        .loading { color: #d97706; }
+/* 🔹 Input */
+input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+    outline: none;
+}
 
-        .meta {
-            font-size: 11px;
-            color: #666;
-            margin-top: 6px;
-        }
-    </style>
+input:focus {
+    border-color: #2563eb;
+}
+
+/* 🔹 Button */
+.start-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.start-btn:hover {
+    background: #1d4ed8;
+}
+
+/* 🔹 Message Area */
+#messageBox {
+    margin-top: 14px;
+    font-size: 12px;
+    text-align: left;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+    display: none;
+    line-height: 1.4;
+    white-space: pre-line;
+}
+
+/* 🔹 Message Types */
+.msg-success { color: #16a34a; }
+.msg-error { color: #dc2626; }
+.msg-info { color: #333; }
+
+/* 🔹 Consent Box */
+#consentBox {
+    display: none;
+    text-align: left;
+    font-size: 12px;
+}
+
+.consent-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 9px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.consent-btn:hover {
+    background: #15803d;
+}
+
+</style>
 </head>
+
 <body>
 
-<div class="card">
+<!-- 🔒 CONSENT SCREEN -->
+<div id="consentBox">
 
-    <h3>Exam Helper</h3>
+    <div class="title">SEB Config Verificator</div>
 
-    <input id="apiKey" placeholder="API Key (only for peak mode)" />
+    <p>
+        This extension is used during exams to verify SEB configuration integrity.<br><br>
+        It temporarily accesses your session cookie only for verification purposes.<br><br>
+        No personal data is stored.
+    </p>
 
-    <button id="start">Start</button>
+    <button id="acceptBtn" class="consent-btn">Accept & Continue</button>
 
-    <div id="status">Idle</div>
-    <div id="meta" class="meta"></div>
+</div>
+
+
+<!-- 🔹 MAIN UI -->
+<div id="mainUI" style="display:none;">
+
+    <!-- Title -->
+    <div class="title">SEB Config Verificator</div>
+
+    <!-- Logo -->
+    <img src="icons/SEB.png" class="logo">
+
+    <!-- Inspection Key -->
+    <div class="input-group">
+        <label>Inspection Key</label>
+        <input id="apiKey" placeholder="Enter Inspection Key">
+    </div>
+
+    <!-- Start -->
+    <button class="start-btn" id="start">Start</button>
+
+    <!-- Messages -->
+    <div id="messageBox"></div>
 
 </div>
 
